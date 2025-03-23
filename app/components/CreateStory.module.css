@@ -1,0 +1,29 @@
+.textareaField {
+  width: 100%;
+  min-height: 250px; /* Bigger area for writing */
+  padding: 15px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.3);
+  font-size: 1.1rem;
+  font-family: "Courier New", monospace; /* Gives a typewriter effect */
+  color: #fff;
+  outline: none;
+  transition: all 0.3s;
+  resize: vertical;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(8px);
+}
+
+/* Cool effect when focusing on the textarea */
+.textareaField:focus {
+  background: rgba(255, 255, 255, 0.5);
+  border: 2px solid #ff7eb3;
+  box-shadow: 0px 6px 15px rgba(255, 126, 179, 0.5);
+}
+
+/* Add a subtle glowing effect when typing */
+.textareaField::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+  font-style: italic;
+}
