@@ -1,79 +1,54 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
+import styles from "./dashboard.module.css"; // ✅ Import the CSS Module
 
-export default function DashboardPage() {
+export default function Dashboard() {
   const [user, setUser] = useState(null);
-  const [stories, setStories] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState("");
   const router = useRouter();
 
   useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
+    const storedUser = localStorage.getItem("user");
 
-    if (!storedUser || !storedUser.token) {
-      router.push("/auth/login");
+    if (!storedUser) {
+      router.push("/auth/login"); // ✅ Redirect to login if not authenticated
     } else {
-      setUser(storedUser);
-      fetchUserStories(storedUser.id);
+      const parsedUser = JSON.parse(storedUser);
+      setUser(parsedUser);
     }
   }, [router]);
 
-  const fetchUserStories = async (userId) => {
-    try {
-      const res = await fetch(
-        `https://story-backend-1.onrender.com/api/stories/user/${userId}`
-      );
-
-      if (!res.ok) {
-        throw new Error("Failed to fetch stories.");
-      }
-
-      const data = await res.json();
-      setStories(data);
-    } catch (error) {
-      console.error("Error fetching stories:", error);
-      setError("Could not load stories.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   if (!user) {
-    return <p>Loading dashboard...</p>;
+    return null; // Prevents flashing before redirect
   }
 
   return (
-    <div>
-      <h1>Welcome, {user.name}! 🎉</h1>
-      <p>Your User ID: {user.id}</p>
+    <div className={styles.dashboardContainer}>
+      <h1>📖 Welcome to Your Dashboard</h1>
+      <p>
+        👤 Logged in as: <strong>{user.name}</strong>
+      </p>
 
-      <h2>Your Stories 📖</h2>
-      {loading ? (
-        <p>Loading your stories...</p>
-      ) : error ? (
-        <p>{error}</p>
-      ) : stories.length > 0 ? (
-        <ul>
-          {stories.map((story) => (
-            <li key={story._id}>
-              <h3>{story.title}</h3>
-              <p>{story.content}</p>
-            </li>
-          ))}
-        </ul>
-      ) : (
-        <p>No stories found.</p>
-      )}
+      {/* "Create New Story" button */}
+      <Link href="/create-story">
+        <button className={styles.createStoryBtn}>➕ Create New Story</button>
+      </Link>
 
+      {/* View Your Stories Button */}
+      <Link href="/your-stories">
+        <button className={styles.viewStoriesBtn}>📚 View Your Stories</button>
+      </Link>
+
+      {/* Logout Button */}
       <button
         onClick={() => {
-          localStorage.removeItem("user");
-          router.push("/auth/login");
+          localStorage.removeItem("user"); // ✅ Clear user session
+          router.push("/auth/login"); // ✅ Redirect to login
         }}
+        className={styles.logoutBtn}
       >
-        Logout
+        🚪 Logout
       </button>
     </div>
   );
