@@ -4,47 +4,51 @@ export default function StoryList() {
   const [stories, setStories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const fetchUserStories = async () => {
-      const user = JSON.parse(localStorage.getItem("user"));
-      if (!user || !user.id) {
-        setError("User not logged in");
-        setLoading(false);
-        return;
-      }
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    if (!storedUser || !storedUser.id) {
+      setError("❌ Please log in to see your stories.");
+      setLoading(false);
+      return;
+    }
 
-      try {
-        const res = await fetch(
-          `https://story-backend-1.onrender.com/api/stories/user/${user.id}`
-        );
-        if (!res.ok) throw new Error("Failed to fetch user stories");
-
-        const data = await res.json();
-        setStories(data);
-      } catch (error) {
-        console.error("Error fetching user stories:", error);
-        setError("Failed to load stories");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchUserStories();
+    setUser(storedUser); // ✅ Store user info
+    fetchUserStories(storedUser.id);
   }, []);
 
-  if (loading) return <p>Loading your stories...</p>;
+  const fetchUserStories = async (userId) => {
+    try {
+      const res = await fetch(
+        `https://story-backend-1.onrender.com/api/stories/user/${userId}`
+      );
+      if (!res.ok) throw new Error("Failed to fetch user stories");
+
+      const data = await res.json();
+      setStories(data);
+    } catch (error) {
+      setError("❌ Failed to load stories.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return <p>⏳ Loading your stories...</p>;
   if (error) return <p>{error}</p>;
-  if (!stories.length) return <p>No stories found.</p>;
+  if (!stories.length) return <p>📭 No stories found.</p>;
 
   return (
-    <ul>
-      {stories.map((story) => (
-        <li key={story._id}>
-          <h2>{story.title}</h2>
-          <p>{story.content}</p>
-        </li>
-      ))}
-    </ul>
+    <div>
+      <h2>📖 {user?.name}'s Stories</h2>
+      <ul>
+        {stories.map((story) => (
+          <li key={story._id}>
+            <h3>{story.title}</h3>
+            <p>{story.content}</p>
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

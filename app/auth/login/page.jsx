@@ -11,7 +11,6 @@ export default function LoginPage() {
   const router = useRouter();
 
   const handleLogin = async (e) => {
-    // ✅ Removed TypeScript ": React.FormEvent"
     e.preventDefault();
     setMessage("");
     setLoading(true);
@@ -30,19 +29,19 @@ export default function LoginPage() {
       setLoading(false);
 
       if (res.ok) {
-        // ✅ Store user data in localStorage
+        // Store the entire user object including _id (MongoDB's ID) in localStorage
         localStorage.setItem(
           "user",
           JSON.stringify({
-            id: data.userId,
+            id: data._id, // Updated to use _id as returned from backend
             name: data.name,
             token: data.token,
           })
         );
 
-        setMessage("✅ Login successful!");
+        setMessage("✅ Login successful! Redirecting...");
         setTimeout(() => {
-          router.push("/landing"); // ✅ Redirect to landing page
+          router.push("/dashboard"); // ✅ Redirect to Dashboard
         }, 1500);
       } else {
         setMessage(data.message || "❌ Invalid email or password!");
@@ -56,29 +55,29 @@ export default function LoginPage() {
   return (
     <div className="container">
       <div className="glass-card">
-        <h1>Login</h1>
+        <h1>🔑 Login</h1>
         <form onSubmit={handleLogin}>
           <input
             type="email"
-            placeholder="Email"
+            placeholder="📧 Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
             type="password"
-            placeholder="Password"
+            placeholder="🔒 Password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             required
           />
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Logging in..." : "🚀 Login"}
           </button>
         </form>
         <p>{message}</p>
         <p>
-          Don't have an account? <Link href="/auth/signup">Sign up</Link>
+          🚀 Don't have an account? <Link href="/auth/signup">Sign up</Link>
         </p>
       </div>
     </div>
