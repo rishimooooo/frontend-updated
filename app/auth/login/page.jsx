@@ -29,11 +29,10 @@ export default function LoginPage() {
       setLoading(false);
 
       if (res.ok) {
-        // Store the entire user object including _id (MongoDB's ID) in localStorage
         localStorage.setItem(
           "user",
           JSON.stringify({
-            id: data._id, // Updated to use _id as returned from backend
+            id: data._id, // Ensure backend returns _id
             name: data.name,
             token: data.token,
           })
